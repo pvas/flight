@@ -27,8 +27,6 @@ $ mvn clean install
 $ java -jar target/flight-1.0.0-SNAPSHOT.jar
 ```
 
-### Test
 
-Send a post rest call to the follow URL: http://localhost:8080/sensor with the format specified on tecnical design.
 
 
