@@ -1,4 +1,4 @@
-package com.immfly.trainning.flight.business.config.redis;
+package com.immfly.trainning.flight.config.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +16,9 @@ import java.time.Duration;
 @EnableRedisRepositories
 public class RedisConfiguration {
 
-    private static String redisHostName = "192.168.1.129";
+//    private static String redisHostName = "192.168.1.129";
+    /* Configured to connect a local redis instance */
+    private static String redisHostName = "localhost";
     private final Integer redisPort = 6379;
     private final Integer redisConnectionTimeout = 2000;
 

@@ -12,29 +12,29 @@ public class Flight implements Serializable {
 
     /** ident. */
     @Indexed
-    private String id;//": "IBB653",
+    private String id;
     /** faFlightId. */
-    private String faFlightId;//": "IBB653-1581399936-airline-0136",
+    private String faFlightId;
     /** airline. */
-    private String airline;//": "IBB",
+    private String airline;
     /** airlineIata. */
-    private String airlineIata;//": "NT",
+    private String airlineIata;
     /** flightNumber. */
     @Indexed
-    private Integer number;//": "653",
+    private Integer number;
     /** tailnumber. */
     @Indexed
-    private String tailNumber;//": "EC-MYT",
+    private String tailNumber;
     /** type. */
-    private String type;//": "Form_Airline",
+    private String type;
     /** codeshares. */
-    private String codeshares;//": "IBE123",
+    private String codeshares;
     /** blocked. */
-    private Boolean blocked;//": false,
+    private Boolean blocked;
     /** diverted. */
-    private Boolean diverted;//": false,
+    private Boolean diverted;
     /** cancelled. */
-    private Boolean cancelled;//": false,
+    private Boolean cancelled;
     /** origin. */
     private Airport origin;
     /** destination. */

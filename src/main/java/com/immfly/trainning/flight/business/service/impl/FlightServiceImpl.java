@@ -1,12 +1,12 @@
 package com.immfly.trainning.flight.business.service.impl;
 
-import com.immfly.trainning.flight.business.config.redis.RedisConfiguration;
+import com.immfly.trainning.flight.config.redis.RedisConfiguration;
 import com.immfly.trainning.flight.business.domain.redis.Airport;
 import com.immfly.trainning.flight.business.service.FlightService;
 import com.immfly.trainning.flight.business.domain.redis.Flight;
 import com.immfly.trainning.flight.business.domain.rest.request.FlightInformationRequest;
 import com.immfly.trainning.flight.business.domain.rest.response.FlightResponse;
-import com.immfly.trainning.flight.business.function.FlightDataToResponse;
+import com.immfly.trainning.flight.business.function.FlightDataToResponseFunction;
 import com.immfly.trainning.flight.business.redis.repository.FlightRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +21,26 @@ import java.util.Optional;
 @Service
 public class FlightServiceImpl implements FlightService {
 
+    private final Integer flightNumberMock = 653;
+
     @Autowired
     private FlightRepository flightRepository;
 
     @Autowired
-    private FlightDataToResponse flightDataToResponse;
+    private FlightDataToResponseFunction flightDataToResponse;
+
+    /**
+     * Mock for test getInitialFlight
+     * @param number
+     * @return
+     */
+    public Optional<Flight> getInitialFlight(Integer number) {
+        Flight response = null;
+        if (number.equals(flightNumberMock)) {
+            response = getInitialFlight();
+        }
+        return Optional.ofNullable(response);
+    }
 
     /**
      * Method helper that return an initial Flight object to persist in cache.
@@ -71,20 +86,38 @@ public class FlightServiceImpl implements FlightService {
      * @return a Flight Response.
      */
     public FlightResponse getFlightInformation(FlightInformationRequest request) {
-        FlightResponse response = new FlightResponse();
-        Iterable<Flight> flightsIt = flightRepository.findAll();
-        List<Flight> flightList = new ArrayList<>();
-        flightsIt.forEach(flightList::add);
+        FlightResponse response = null;
+        Flight flight = null;
+        if (request != null && request.getTailNumber() != null && request.getFlightNumber() != null) {
+            Iterable<Flight> flightsIt = flightRepository.findAll();
+            List<Flight> flightList = new ArrayList<>();
+            flightsIt.forEach(flightList::add);
 
-        Optional<Flight> flightOptional = flightList.stream().filter(x
-                -> x.compareByTailAndFlightNumber(request.getTailNumber(), request.getFlightNumber())).findAny();
+            Optional<Flight> flightOptional = flightList.stream().filter(x
+                    -> x.compareByTailAndFlightNumber(request.getTailNumber(), request.getFlightNumber())).findAny();
 
-        if (!flightOptional.isPresent()) {
-            //find in external service
-            updateCache(getInitialFlight());
+            if (!flightOptional.isPresent()) {
+                //todo find in external service
+                log.info("Retrieving info for Flight number: {} and Tail number: {}",
+                        request.getFlightNumber(), request.getTailNumber());
+                Optional<Flight> initialCacheFlightOpt = getInitialFlight(request.getFlightNumber());
+                if (initialCacheFlightOpt.isPresent() && !flightOptional.equals(Optional.empty())) {
+                    log.info("Retrieved info for Flight ID: {}", initialCacheFlightOpt.get().getId());
+                    flight = initialCacheFlightOpt.get();
+                    if (flight.getNumber() != null) {
+                        response = flightDataToResponse.wrapData(updateCache(flight));
+                    }
+                } else {
+                    log.error("Could not retrieve info for Flight number: {} and Tail number: {}",
+                            request.getFlightNumber(), request.getTailNumber());
+                }
+            } else if (!flightOptional.equals(Optional.empty())) {
+                response = flightDataToResponse.wrapData(flightOptional.get());
+            }
         } else {
-            log.info("Retrieving info for Flight id: {}", flightOptional.get().getId());
-            response = flightDataToResponse.wrapData(flightOptional.get());
+            final String errorMessage = "Flight Information Request cannot be null.";
+            log.error(errorMessage);
+            throw new NullPointerException(errorMessage);
         }
         return response;
     }
@@ -93,17 +126,21 @@ public class FlightServiceImpl implements FlightService {
      * Method in charge to save in Redis a new Flight.
      *
      * @param flight flight to be saved.
+     * @return saved Flight.
      */
-    private void updateCache(Flight flight) {
+    private Flight updateCache(Flight flight) {
+        Flight saved = null;
         try (Jedis jedis = RedisConfiguration.jedisPool.getResource()) {
             jedis.getClient().setTimeoutInfinite();
             Optional<Flight> response = flightRepository.findById(flight.getId());
             if (!response.isPresent()) {
-                flightRepository.save(flight);
+                saved = flightRepository.save(flight);
+                log.info("Saved Flight ID: {}", flight.getId());
             }
         } finally {
             RedisConfiguration.jedisPool.destroy();
         }
+        return saved;
     }
 
 }

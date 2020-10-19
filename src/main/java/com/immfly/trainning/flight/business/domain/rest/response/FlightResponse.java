@@ -10,27 +10,27 @@ import java.io.Serializable;
 public class FlightResponse implements Serializable {
 
     /** ident. */
-    private String ident;//": "IBB653",
+    private String ident;
     /** faFlightId. */
-    private String faFlightID;//": "IBB653-1581399936-airline-0136",
+    private String faFlightID;
     /** airline. */
-    private String airline;//": "IBB",
+    private String airline;
     /** airlineIata. */
-    private String airline_iata;//": "NT",
+    private String airline_iata;
     /** flightNumber. */
-    private Integer flightnumber;//": "653",
+    private Integer flightnumber;
     /** tailnumber. */
-    private String tailnumber;//": "EC-MYT",
+    private String tailnumber;
     /** type. */
-    private String type;//": "Form_Airline",
+    private String type;
     /** codeshares. */
-    private String codeshares;//": "IBE123",
+    private String codeshares;
     /** blocked. */
-    private Boolean blocked;//": false,
+    private Boolean blocked;
     /** diverted. */
-    private Boolean diverted;//": false,
+    private Boolean diverted;
     /** cancelled. */
-    private Boolean cancelled;//": false,
+    private Boolean cancelled;
     /** origin. */
     private AirportResponse origin;
     /** destination. */

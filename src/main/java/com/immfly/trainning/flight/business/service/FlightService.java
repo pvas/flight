@@ -6,4 +6,5 @@ import com.immfly.trainning.flight.business.domain.rest.response.FlightResponse;
 public interface FlightService {
 
     FlightResponse getFlightInformation(FlightInformationRequest request);
+
 }

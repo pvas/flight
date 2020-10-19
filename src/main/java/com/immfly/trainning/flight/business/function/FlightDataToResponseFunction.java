@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FlightDataToResponse {
+public class FlightDataToResponseFunction {
 
     @Autowired
-    private AirportDataToResponse airportDataToResponse;
+    private AirportDataToResponseFunction airportDataToResponse;
 
     public FlightResponse wrapData(final Flight flight) {
         FlightResponse response = new FlightResponse();

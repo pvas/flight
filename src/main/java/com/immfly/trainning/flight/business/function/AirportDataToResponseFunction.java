@@ -5,7 +5,7 @@ import com.immfly.trainning.flight.business.domain.rest.response.AirportResponse
 import org.springframework.stereotype.Component;
 
 @Component
-public class AirportDataToResponse {
+public class AirportDataToResponseFunction {
 
     public AirportResponse wrapData(final Airport airport) {
         AirportResponse response = new AirportResponse();
