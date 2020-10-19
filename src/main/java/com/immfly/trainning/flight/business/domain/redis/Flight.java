@@ -39,4 +39,9 @@ public class Flight implements Serializable {
     private Airport origin;
     /** destination. */
     private Airport destination;
+
+    public Boolean compareByTailAndFlightNumber(String tailNumber, Integer flightNumber) {
+        return this.getTailNumber().equals(tailNumber)
+                && this.getNumber().equals(flightNumber);
+    }
 }

@@ -13,7 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 
-import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -26,8 +27,12 @@ public class FlightServiceImpl implements FlightService {
     @Autowired
     private FlightDataToResponse flightDataToResponse;
 
-    @PostConstruct
-    private void insertInit() {
+    /**
+     * Method helper that return an initial Flight object to persist in cache.
+     *
+     * @return
+     */
+    private Flight getInitialFlight() {
         Flight flight = new Flight();
         flight.setId("IBB653");
         flight.setFaFlightId("IBB653-1581399936-airline-0136");
@@ -56,15 +61,7 @@ public class FlightServiceImpl implements FlightService {
         flight.setOrigin(origin);
         flight.setDestination(destination);
 
-        try (Jedis jedis = RedisConfiguration.jedisPool.getResource()) {
-            jedis.getClient().setTimeoutInfinite();
-            Optional<Flight> response = flightRepository.findById(flight.getId());
-            if (!response.isPresent()) {
-                flightRepository.save(flight);
-            }
-        } finally {
-            RedisConfiguration.jedisPool.destroy();
-        }
+        return flight;
     }
 
     /**
@@ -75,19 +72,38 @@ public class FlightServiceImpl implements FlightService {
      */
     public FlightResponse getFlightInformation(FlightInformationRequest request) {
         FlightResponse response = new FlightResponse();
-        Flight flight;
-//        flight = flightRepository.findByTailNumberAndNumber(request.getTailNumber(), request.getFlightNumber());
-        Optional<Flight> flightOptional;// = flightRepository.findById("IBB653");
-        flightOptional = flightRepository.findByNumber(request.getFlightNumber());
-        flightOptional = flightRepository.findByTailNumber(request.getTailNumber());
+        Iterable<Flight> flightsIt = flightRepository.findAll();
+        List<Flight> flightList = new ArrayList<>();
+        flightsIt.forEach(flightList::add);
+
+        Optional<Flight> flightOptional = flightList.stream().filter(x
+                -> x.compareByTailAndFlightNumber(request.getTailNumber(), request.getFlightNumber())).findAny();
+
         if (!flightOptional.isPresent()) {
-            //find in external webservice
+            //find in external service
+            updateCache(getInitialFlight());
         } else {
-            flight = flightOptional.get();
-            log.info("Flight id: {}", flight.getId());
-            response = flightDataToResponse.wrapData(flight);
+            log.info("Retrieving info for Flight id: {}", flightOptional.get().getId());
+            response = flightDataToResponse.wrapData(flightOptional.get());
         }
         return response;
+    }
+
+    /**
+     * Method in charge to save in Redis a new Flight.
+     *
+     * @param flight flight to be saved.
+     */
+    private void updateCache(Flight flight) {
+        try (Jedis jedis = RedisConfiguration.jedisPool.getResource()) {
+            jedis.getClient().setTimeoutInfinite();
+            Optional<Flight> response = flightRepository.findById(flight.getId());
+            if (!response.isPresent()) {
+                flightRepository.save(flight);
+            }
+        } finally {
+            RedisConfiguration.jedisPool.destroy();
+        }
     }
 
 }
