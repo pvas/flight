@@ -2,6 +2,7 @@ package com.immfly.trainning.flight.business.domain.redis;
 
 import lombok.Data;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 import java.io.Serializable;
 
@@ -10,6 +11,7 @@ import java.io.Serializable;
 public class Flight implements Serializable {
 
     /** ident. */
+    @Indexed
     private String id;//": "IBB653",
     /** faFlightId. */
     private String faFlightId;//": "IBB653-1581399936-airline-0136",
@@ -18,8 +20,10 @@ public class Flight implements Serializable {
     /** airlineIata. */
     private String airlineIata;//": "NT",
     /** flightNumber. */
+    @Indexed
     private Integer number;//": "653",
     /** tailnumber. */
+    @Indexed
     private String tailNumber;//": "EC-MYT",
     /** type. */
     private String type;//": "Form_Airline",

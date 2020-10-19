@@ -1,11 +1,13 @@
 package com.immfly.trainning.flight.business.domain.rest.response;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
-public abstract class FlightResponse implements Serializable {
+@NoArgsConstructor
+public class FlightResponse implements Serializable {
 
     /** ident. */
     private String ident;//": "IBB653",

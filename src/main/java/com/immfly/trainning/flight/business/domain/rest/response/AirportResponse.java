@@ -1,11 +1,13 @@
 package com.immfly.trainning.flight.business.domain.rest.response;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+@NoArgsConstructor
 @Data
-public abstract class AirportResponse implements Serializable {
+public class AirportResponse implements Serializable {
 
     /** code. */
     private String id;
