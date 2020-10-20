@@ -48,8 +48,10 @@ docker run -p 8080:8080/tcp --name flight_cont flight:latest
 
 Postman URL:
 http://localhost:8080/v1/flight-information/{tail-number}/{flight-number}
+
 Authorization: 
-username: admin
+
+username: admin 
 password: secret
 
 
