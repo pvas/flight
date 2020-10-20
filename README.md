@@ -16,7 +16,6 @@ The application is build using Spring Boot framework (2.3.4.RELEASE) with the fo
 *	[Jacksondatabind 2.11.0]: Convert that data from json format to java objects format
 *	[Junit: 5.6.2]: framework that was used to create unit test for the application 
 *	[Mockito 3.3.3]: library that allows us to mock and validate some methods call in unit tests
-*	[springfox-swagger2 3.0.0-SNAPSHOT]: simplify API development with the Swagger open source and professional toolset.
 *	[Apache commons-pool2]: library to provide the object pooling API.
 
 Everything managed with Maven, using Java 8.
